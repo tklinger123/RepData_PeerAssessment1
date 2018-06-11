@@ -18,16 +18,28 @@ Show any code that is needed to
 
 Reading the data from "activity.csv", defining komma as separator, and NA strings:
 
-```{r}
+
+```r
 echo = TRUE
 data <- read.csv("activity.csv", header = TRUE, sep = ",", na.strings = "NA")
 ```
 
 Looking at the head of the dataset, to see whether the data was loaded correctly:
 
-```{r}
+
+```r
 echo = TRUE
 head(data)
+```
+
+```
+##   steps       date interval
+## 1    NA 2012-10-01        0
+## 2    NA 2012-10-01        5
+## 3    NA 2012-10-01       10
+## 4    NA 2012-10-01       15
+## 5    NA 2012-10-01       20
+## 6    NA 2012-10-01       25
 ```
 
 
@@ -40,7 +52,8 @@ For this part of the assignment, you can ignore the missing values in the datase
 
 Aggregating the number of steps taken each day and adding column names to the created data frame:
 
-```{r}
+
+```r
 echo = TRUE
 steps_each_day <- aggregate(steps ~ date, data, sum)
 colnames(steps_each_day) <- c("date", "steps")
@@ -48,23 +61,36 @@ colnames(steps_each_day) <- c("date", "steps")
 
 Generating the histogram:
 
-```{r}
+
+```r
 echo = TRUE
 hist(as.numeric(steps_each_day$steps), breaks = 20, col = "red", xlab = "Number of Steps", main= "Total number of steps taken per day")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
 Calculating the mean value:
 
-```{r}
+
+```r
 echo = TRUE
 mean(steps_each_day$steps)
 ```
 
+```
+## [1] 10766.19
+```
+
 Calculating the median value:
 
-```{r}
+
+```r
 echo = TRUE
 median(steps_each_day$steps)
+```
+
+```
+## [1] 10765
 ```
 
 
@@ -75,17 +101,26 @@ median(steps_each_day$steps)
 
 Generating a time series plot of the 5-minute interval and the averaged number of steps taken:
 
-```{r}
+
+```r
 echo = TRUE
 mn_int <- tapply(data$steps, data$interval, mean, na.rm=T)
 plot(mn_int ~ unique(data$interval), type="l", xlab = "5-min interval")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png)<!-- -->
+
 Showing th 5-minute interval that contains the maximum number of steps (line one) and its value (line two):
 
-```{r}
+
+```r
 echo = TRUE
 mn_int[which.max(mn_int)]
+```
+
+```
+##      835 
+## 206.1698
 ```
 
 
@@ -95,11 +130,30 @@ Note that there are a number of days/intervals where there are missing values (c
 
 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 echo = TRUE
 sum(is.na(as.character(data$steps)))
+```
+
+```
+## [1] 2304
+```
+
+```r
 sum(is.na(as.character(data$date)))
+```
+
+```
+## [1] 0
+```
+
+```r
 sum(is.na(as.character(data$interval)))
+```
+
+```
+## [1] 0
 ```
 
 The total number of NAs is 2304, all of them in the "steps" variable.
@@ -109,7 +163,8 @@ The total number of NAs is 2304, all of them in the "steps" variable.
 
 For any NA in the step variable, the mean (of steps) of the corresponding interval is taken as the replacing value. The "mn_int"" contains the mean for each single interval calculated over the 61 days. The right value coming from "mn_int"" is going to be used to replace the NA at the same interval.
 
-```{r}
+
+```r
 echo = TRUE
 data2 <- data
 for (i in 1:nrow(data)){
@@ -123,36 +178,51 @@ for (i in 1:nrow(data)){
 
 Creating a data frame with the steps taken for each day:
 
-```{r}
+
+```r
 echo = TRUE
 steps_each_day_complete <- aggregate(steps ~ date, data = data2, sum)
 ```
 
 Adding column names to the created data frame:
 
-```{r}
+
+```r
 echo = TRUE
 colnames(steps_each_day_complete) <- c("date", "steps")
 ```
 
 Generating the histogram:
 
-```{r}
+
+```r
 hist(as.numeric(steps_each_day_complete$steps), breaks = 20, col = "red", xlab = "Number of Steps", main= "Total number of steps taken per day (no NAs)")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
 Calculating the mean value:
 
-```{r}
+
+```r
 echo = TRUE
 mean(steps_each_day_complete$steps)
 ```
 
+```
+## [1] 10766.19
+```
+
 Calculating the median value:
 
-```{r}
+
+```r
 echo = TRUE
 median(steps_each_day_complete$steps)
+```
+
+```
+## [1] 10766.19
 ```
 
 The mean of the complete dataset is equal to the mean of the dataset without missing values. The median shows a small difference, but is almost identical to the previous value.
@@ -162,7 +232,8 @@ The mean of the complete dataset is equal to the mean of the dataset without mis
 
 Creating a factor variable "day "to store the day of the week, a logical variable "is_weekday" (weekday=TRUE, weekend=FALSE), and the average number of steps for weekdays and weekends:
 
-```{r}
+
+```r
 echo = TRUE
 data2$date <- as.Date(data2$date, format = "%Y-%m-%d")
 data$interval <- factor(data$interval)
@@ -179,7 +250,8 @@ steps_per_interval_weekends <- aggregate(weekends_data$steps, by=list(interval=w
 
 Adding columns names, adding a column to indicate the day, merging the two together, and converting the day variabke to a factor:
 
-```{r}
+
+```r
 echo = TRUE
 colnames(steps_per_interval_weekdays) <- c("interval", "average_steps")
 colnames(steps_per_interval_weekends) <- c("interval", "average_steps")
@@ -194,9 +266,12 @@ week_data$day <- as.factor(week_data$day)
 
 Generating the plot:
 
-```{r}
+
+```r
 library(lattice)
 xyplot(average_steps ~  interval | day, data = week_data, layout = c(1,2), type ="l", ylab="Number of Steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-18-1.png)<!-- -->
 
 The results show that the activity starts earlier on weekdays, but the overall activity is higher on weekends.
